@@ -1,0 +1,9 @@
+{
+  "_comentario": "Configuración de demostración en vivo con la webcam de esta máquina (cámara índice 0). Una sola 'mesa' que cubre casi todo el cuadro, para detectar de forma confiable sin calibrar la posición exacta de una mesa real. Timeouts acelerados (comparados con los de producción) para que el cambio de estado se vea en segundos durante la demo, no en minutos.",
+  "camera_id": "webcam-demo",
+  "tables": [
+    {"numero": 1, "capacidad": 1, "zona": "Demo", "polygon": [[0.03, 0.03], [0.97, 0.03], [0.97, 0.97], [0.03, 0.97]]}
+  ],
+  "exclusion_zones": [],
+  "staff": []
+}

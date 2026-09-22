@@ -441,7 +441,7 @@ def run_video(pipeline: ScanEatsPipeline, settings: ServiceSettings, source: str
                 analisis.observar(now, dets, pistas, pipeline, anotada)
             procesados += 1
             if show:
-                cv2.imshow("ScanEats", frame)
+                cv2.imshow("ScanEats", anotada if anotada is not None else frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
                     break
     finally:
@@ -504,7 +504,7 @@ def main(argv=None) -> int:
     if args.informe:
         os.makedirs(args.informe, exist_ok=True)
         args.annotate = args.annotate or os.path.join(args.informe, "deteccion_yolo.mp4")
-    if args.annotate or clips_anotados or args.informe:
+    if args.annotate or clips_anotados or args.informe or args.show:
         from .annotate import Annotator, EventTap
 
         publisher = EventTap(publisher)

@@ -37,3 +37,4 @@ infra/terraform/*.tfplan
 .idea/
 .vscode/
 .DS_Store
+infra/terraform/.env.aws
