@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Secretos y datos locales
+.env
+db.sqlite3
+*.sqlite3
+clips_locales/
+clips_tmp/
+staticfiles/
+
+# Modelos y video
+*.pt
+*.mp4
+*.avi
+informe_video/
+
+*.log
+
+# Docker
+staticfiles/
+
+# Terraform
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/.terraform.lock.hcl
+infra/terraform/terraform.tfvars
+infra/terraform/*.tfplan
+
+# IDE / SO
+.idea/
+.vscode/
+.DS_Store

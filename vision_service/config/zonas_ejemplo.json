@@ -1,0 +1,27 @@
+{
+  "_comentario": "Ejemplo para el local observado (Encebollados X, 12 mesas). Coordenadas NORMALIZADAS 0..1 sobre el fotograma: reemplácelas dibujando cada mesa sobre una captura real de la cámara. Disposición de ejemplo: 4 columnas de 3 mesas numeradas por columna; dentro de una columna las mesas están pegadas (adyacentes: p. ej. 4-5-6, la fusión observada en alta demanda) y entre columnas hay pasillo (no adyacentes).",
+  "camera_id": "cam-salon-1",
+  "adjacency_max_gap": 0.05,
+  "tables": [
+    {"numero": 1, "capacidad": 2, "zona": "Salón principal", "polygon": [[0.28, 0.10], [0.38, 0.10], [0.38, 0.35], [0.28, 0.35]]},
+    {"numero": 2, "capacidad": 2, "zona": "Salón principal", "polygon": [[0.28, 0.38], [0.38, 0.38], [0.38, 0.63], [0.28, 0.63]]},
+    {"numero": 3, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.28, 0.66], [0.38, 0.66], [0.38, 0.91], [0.28, 0.91]]},
+    {"numero": 4, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.46, 0.10], [0.56, 0.10], [0.56, 0.35], [0.46, 0.35]]},
+    {"numero": 5, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.46, 0.38], [0.56, 0.38], [0.56, 0.63], [0.46, 0.63]]},
+    {"numero": 6, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.46, 0.66], [0.56, 0.66], [0.56, 0.91], [0.46, 0.91]]},
+    {"numero": 7, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.64, 0.10], [0.74, 0.10], [0.74, 0.35], [0.64, 0.35]]},
+    {"numero": 8, "capacidad": 4, "zona": "Salón principal", "polygon": [[0.64, 0.38], [0.74, 0.38], [0.74, 0.63], [0.64, 0.63]]},
+    {"numero": 9, "capacidad": 6, "zona": "Salón principal", "polygon": [[0.64, 0.66], [0.74, 0.66], [0.74, 0.91], [0.64, 0.91]]},
+    {"numero": 10, "capacidad": 6, "zona": "Salón principal", "polygon": [[0.82, 0.10], [0.92, 0.10], [0.92, 0.35], [0.82, 0.35]]},
+    {"numero": 11, "capacidad": 2, "zona": "Salón principal", "polygon": [[0.82, 0.38], [0.92, 0.38], [0.92, 0.63], [0.82, 0.63]]},
+    {"numero": 12, "capacidad": 2, "zona": "Salón principal", "polygon": [[0.82, 0.66], [0.92, 0.66], [0.92, 0.91], [0.82, 0.91]]}
+  ],
+  "exclusion_zones": [
+    {"nombre": "Caja", "polygon": [[0.02, 0.10], [0.22, 0.10], [0.22, 0.45], [0.02, 0.45]]}
+  ],
+  "staff": [
+    {"identificador": "MES-A", "nombre": "Mesero A", "prenda_tipo": "DELANTAL", "prenda_color": "ROJO"},
+    {"identificador": "MES-B", "nombre": "Mesero B", "prenda_tipo": "DELANTAL", "prenda_color": "AZUL"},
+    {"identificador": "MES-C", "nombre": "Mesero C", "prenda_tipo": "DELANTAL", "prenda_color": "VERDE"}
+  ]
+}

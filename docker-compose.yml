@@ -1,0 +1,56 @@
+# docker-compose.yml — entorno local de ScanEats con PostgreSQL real (no SQLite)
+#
+# Uso:
+#   docker compose up --build
+#   docker compose exec api python manage.py cargar_demo --admin gerente --password 'Cambiar-Esta-123'
+#   docker compose exec api python manage.py crear_servicio_vision
+#
+# ⚠ No se ejecutó en esta máquina (no hay Docker instalado aquí). Verifíquelo con `docker compose config`
+# y `docker compose up` antes de usarlo para la defensa o para producción.
+#
+# El microservicio de visión NO está aquí: necesita una fuente de video (archivo, RTSP o una webcam del
+# host) que no tiene sentido fijar en un compose genérico. Ejecútelo aparte:
+#   docker build -t scaneats-vision ./vision_service
+#   docker run --rm --env-file vision_service/.env -v "$PWD/video.mp4:/data/video.mp4:ro" \
+#       scaneats-vision --source /data/video.mp4 --config config/zonas_video.json --dry-run
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scaneats
+      POSTGRES_USER: scaneats
+      POSTGRES_PASSWORD: scaneats-local-dev   # SOLO para desarrollo local; en AWS usa el password real de RDS
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scaneats"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5432:5432"   # expuesto solo para depurar con un cliente local; quítelo en producción
+
+  api:
+    build: ./restaurante_api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DJANGO_DEBUG: "True"          # cambiar a "False" + definir DJANGO_SECRET_KEY para producción
+      DJANGO_ALLOWED_HOSTS: "localhost,127.0.0.1"
+      DB_HOST: db
+      DB_NAME: scaneats
+      DB_USER: scaneats
+      DB_PASSWORD: scaneats-local-dev
+      DB_SSLMODE: disable          # RDS real: quitar esta línea (exige TLS por defecto)
+      CLIP_STORAGE_BACKEND: local
+      EVIDENCIA_RETENCION_DIAS: "30"
+    volumes:
+      - clips_data:/app/clips_locales
+    ports:
+      - "8000:8000"
+
+volumes:
+  db_data:
+  clips_data:

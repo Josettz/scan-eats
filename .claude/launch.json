@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "scaneats-api",
+      "runtimeExecutable": "C:/Users/Administrator/Desktop/CONSTRUCCIÓN/restaurante_api/.venv/Scripts/python.exe",
+      "runtimeArgs": ["restaurante_api/manage.py", "runserver", "8000", "--noreload"],
+      "port": 8000
+    }
+  ]
+}

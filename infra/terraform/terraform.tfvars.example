@@ -1,0 +1,9 @@
+# infra/terraform/terraform.tfvars.example
+# Copie este archivo a terraform.tfvars (que SÍ está en .gitignore) y complete sus valores reales.
+# terraform.tfvars nunca debe subirse a git: tiene la contraseña de la base de datos.
+
+aws_region        = "us-east-1"
+my_ip_cidr        = "203.0.113.10/32"   # su IP pública + /32 — averígüela con: curl ifconfig.me
+ec2_key_pair_name = "mi-llave-scaneats"  # debe existir ya en EC2 → Key Pairs de esa región
+db_password       = "cambie-esto-por-una-contrasena-larga-y-unica"
+s3_bucket_name    = "scaneats-evidencia-equipo-XX"  # único en TODO AWS; cambie "equipo-XX"

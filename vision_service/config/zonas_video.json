@@ -1,0 +1,22 @@
+{
+  "_comentario": "Zonas dibujadas sobre el video.mp4 del equipo (cámara fija, comedor al aire libre). Coordenadas normalizadas 0..1. Cada zona cubre la mesa Y sus sillas.",
+  "_prenda_comentario": "La camiseta azul marino del mesero mide H~127 S~50 V~50 en esta cámara: casi negro. Por eso se registra como NEGRO; conviene un delantal de color vivo (ver README).",
+  "camera_id": "cam-comedor",
+  "adjacency_max_gap": 0.03,
+  "_delivery_comentario": "Umbrales de entrega calibrados para ESTA cámara: el plato ocupa ~0.2-0.7 % del mantel (medido en video.mp4), no el 5 % por defecto.",
+  "delivery": {"change_high": 0.002, "change_low": 0.0007, "persist_s": 2.0, "staff_window_s": 8.0},
+  "_calibracion_comentario": "Mesero y clienta visten oscuro: el color no discrimina. Se exige mas confianza de prenda, quien lleva >30 s sentado es cliente SIEMPRE (veto sin excepcion) y el tracker tolera oclusiones de ~6 s.",
+  "behavior": {"seated_dwell_s": 30.0},
+  "cascade": {"clothing_accept": 0.85, "seated_veto_clothing_max": 1.01},
+  "tracker": {"max_age": 30},
+  "tables": [
+    {"numero": 1, "capacidad": 4, "zona": "Comedor", "polygon": [[0.03, 0.08], [0.25, 0.08], [0.25, 0.43], [0.03, 0.43]], "surface": [[0.05, 0.18], [0.17, 0.18], [0.17, 0.3], [0.05, 0.3]]},
+    {"numero": 2, "capacidad": 6, "zona": "Comedor", "polygon": [[0.355, 0.05], [0.645, 0.05], [0.645, 0.445], [0.355, 0.445]], "surface": [[0.383, 0.19], [0.586, 0.19], [0.604, 0.305], [0.383, 0.296]]},
+    {"numero": 3, "capacidad": 6, "zona": "Comedor", "polygon": [[0.72, 0.1], [0.98, 0.1], [0.98, 0.435], [0.72, 0.435]], "surface": [[0.74, 0.2], [0.95, 0.2], [0.95, 0.3], [0.74, 0.3]]},
+    {"numero": 4, "capacidad": 6, "zona": "Comedor", "polygon": [[0.24, 0.46], [1.0, 0.46], [1.0, 1.0], [0.24, 1.0]], "surface": [[0.375, 0.53], [0.885, 0.53], [0.885, 0.73], [0.375, 0.73]]}
+  ],
+  "exclusion_zones": [],
+  "staff": [
+    {"identificador": "MES-A", "nombre": "Mesero A", "prenda_tipo": "CAMISETA", "prenda_color": "NEGRO"}
+  ]
+}

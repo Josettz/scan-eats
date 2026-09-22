@@ -1,0 +1,47 @@
+#!/bin/bash
+# infra/terraform/user_data.sh.tftpl — arranque de la EC2 (Amazon Linux 2023)
+#
+# Deja el SISTEMA OPERATIVO listo (Python, venv vacío, usuario de servicio, unidad systemd, cron de
+# purga). NO clona ni instala el código de ScanEats a propósito: el repositorio del equipo puede no
+# existir todavía en GitHub cuando se corre `terraform apply`. El código se despliega a mano siguiendo
+# el runbook de infra/terraform/README.md (git clone + pip install + .env + systemctl restart).
+set -euxo pipefail
+
+dnf update -y
+dnf install -y python3.12 python3.12-pip git
+
+useradd -m -s /bin/bash scaneats || true
+mkdir -p /home/scaneats/app
+chown -R scaneats:scaneats /home/scaneats
+
+# Unidad systemd: arranca sola en el próximo reinicio de la instancia, y se reinicia sola si el proceso
+# muere (RNF-02: disponibilidad). El ExecStart asume el código en /home/scaneats/app/restaurante_api
+# con un venv ya creado ahí (paso manual del runbook) — systemctl restart la recarga tras cada despliegue.
+cat > /etc/systemd/system/scaneats-api.service <<'UNIT'
+[Unit]
+Description=ScanEats backend (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=scaneats
+WorkingDirectory=/home/scaneats/app/restaurante_api
+EnvironmentFile=-/home/scaneats/app/restaurante_api/.env
+ExecStart=/home/scaneats/app/restaurante_api/.venv/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --access-logfile - --error-logfile -
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable scaneats-api
+# No se arranca aquí (systemctl start): el código todavía no está desplegado. El runbook lo arranca al final.
+
+# RNF-03: purga diaria de evidencia vencida (además de la regla de ciclo de vida de S3, ver s3.tf).
+cat > /etc/cron.d/scaneats-purga <<'CRON'
+0 3 * * * scaneats /home/scaneats/app/restaurante_api/.venv/bin/python /home/scaneats/app/restaurante_api/manage.py purgar_evidencia >> /var/log/scaneats-purga.log 2>&1
+CRON
+chmod 644 /etc/cron.d/scaneats-purga
+
+echo "user_data listo. Región: ${aws_region} · Bucket: ${s3_bucket}" > /home/scaneats/README-user-data.txt

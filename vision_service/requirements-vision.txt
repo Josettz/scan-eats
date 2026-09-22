@@ -1,0 +1,6 @@
+# vision_service/requirements-vision.txt  — dependencias PESADAS (solo para procesar video real)
+-r requirements.txt
+opencv-python-headless>=4.9   # usar opencv-python si quiere ventana (--show)
+ultralytics>=8.2              # YOLOv8 (trae PyTorch); descargue los pesos yolov8n.pt la primera vez
+deep-sort-realtime>=1.3.2     # opcional: solo con --tracker deepsort
+imageio-ffmpeg>=0.5     # ffmpeg embebido: recodifica los clips a H.264 (visibles en cualquier navegador)

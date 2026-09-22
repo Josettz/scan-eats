@@ -1,0 +1,10 @@
+# restaurante_api/requirements.txt
+Django>=5.2,<5.3
+djangorestframework>=3.16
+django-filter>=25.1
+django-cors-headers>=4.4   # CORS: listo por si se agrega un frontend en otro origen (ver settings.py)
+whitenoise>=6.7             # sirve /static/ desde gunicorn sin necesitar nginx
+boto3>=1.34            # S3 (URLs firmadas + borrado de clips); import perezoso, solo se usa con CLIP_STORAGE_BACKEND=s3
+psycopg[binary]>=3.2   # PostgreSQL / RDS; solo se importa si se define DB_HOST
+gunicorn>=22.0         # servidor WSGI para EC2
+redis>=5.0              # cliente de caché compartida (CACHE_BACKEND=redis); opcional, solo si se usa ElastiCache

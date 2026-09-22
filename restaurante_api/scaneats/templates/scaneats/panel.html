@@ -1,0 +1,99 @@
+{% load tz %}<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScanEats · Panel</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --tx:#1c2430; --mut:#667085; --line:#e4e7ec; --ac:#c2410c; --ok:#15803d; --wa:#b45309; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12161c; --card:#1a2028; --tx:#e8ecf1; --mut:#98a2b3; --line:#2b3441; --ac:#fb923c; --ok:#4ade80; --wa:#fbbf24; } }
+  * { box-sizing:border-box } body { margin:0; background:var(--bg); color:var(--tx); font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif }
+  header { display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; padding:14px 24px; background:var(--card); border-bottom:1px solid var(--line) }
+  header h1 { font-size:18px; margin:0 } header h1 span { color:var(--ac) } nav a { color:var(--mut); margin-left:16px; text-decoration:none } nav a:hover { color:var(--tx) }
+  main { max-width:1100px; margin:0 auto; padding:20px 16px 48px } .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); margin-bottom:16px }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px } .card h2 { margin:0 0 4px; font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--mut) }
+  .big { font-size:32px; font-weight:650; line-height:1.15 } .sub { color:var(--mut); font-size:13px } h3 { font-size:16px; margin:26px 0 8px }
+  table { width:100%; border-collapse:collapse; font-size:14px } th,td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line) } th { color:var(--mut); font-weight:600; font-size:12px; text-transform:uppercase }
+  td.n, th.n { text-align:right; font-variant-numeric:tabular-nums } .tag { display:inline-block; padding:1px 8px; border-radius:99px; font-size:12px; border:1px solid var(--line) }
+  .LIBRE { color:var(--mut) } .OCUPADA { color:var(--ok); border-color:var(--ok) } .POSIBLEMENTE_LIBRE { color:var(--wa); border-color:var(--wa) }
+  form { display:flex; flex-wrap:wrap; gap:10px; align-items:end } label { font-size:12px; color:var(--mut); display:flex; flex-direction:column; gap:3px }
+  input,button { font:inherit; padding:7px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--tx) } button { background:var(--ac); color:#fff; border-color:var(--ac); cursor:pointer }
+  .err { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; padding:10px 14px; border-radius:8px; margin-top:14px }
+  .bar { display:flex; align-items:center; gap:8px } .bar i { display:block; height:12px; background:var(--mut); border-radius:3px; opacity:.55 } .bar i.pico { background:var(--ac); opacity:1 }
+  dialog { border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--tx); padding:14px; max-width:94vw } dialog::backdrop { background:rgba(0,0,0,.6) } dialog video { display:block; width:min(860px,88vw); background:#000; border-radius:8px } dialog form { margin-top:10px; justify-content:flex-end }
+  .empty { color:var(--mut); padding:10px 0 } a.clip { color:var(--ac); text-decoration:none; margin-right:8px } .wrap { overflow-x:auto }
+</style>
+</head>
+<body>
+<header>
+  <h1>Scan<span>Eats</span> · Panel del administrador</h1>
+  <nav>{{ request.user.get_username }} · <a href="/admin/">Configuración (mesas, zonas, personal)</a><a href="/admin/logout/">Salir</a></nav>
+</header>
+<main>
+  <form method="get">
+    <label>Desde <input type="date" name="desde" value="{{ filtros.desde }}"></label>
+    <label>Hasta <input type="date" name="hasta" value="{{ filtros.hasta }}"></label>
+    <button>Filtrar</button>{% if filtros.desde or filtros.hasta %} <a href="/" style="color:var(--mut)">Quitar filtro</a>{% endif %}
+  </form>
+  {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+  {% if espera %}
+  <div class="grid" style="margin-top:16px">
+    <section class="card">
+      <h2>1 · Tiempo de espera promedio</h2>
+      <div class="big">{{ espera.promedio_mmss }} <span class="sub">min:seg</span></div>
+      <div class="sub">{{ espera.ocupaciones_con_entrega }} de {{ espera.total_ocupaciones }} ocupaciones con entrega · de la ocupación a la 1.ª entrega</div>
+      {% if espera.por_mesa %}<div class="wrap"><table style="margin-top:10px"><tr><th>Mesa</th><th class="n">Muestras</th><th class="n">Promedio</th></tr>
+        {% for m in espera.por_mesa %}<tr><td>Mesa {{ m.mesa_numero }}</td><td class="n">{{ m.muestras }}</td><td class="n">{{ m.mmss }}</td></tr>{% endfor %}</table></div>{% endif %}
+    </section>
+    <section class="card">
+      <h2>2 · Empleado con más mesas atendidas</h2>
+      {% if empleados.empleados_top %}
+        <div class="big">{% for e in empleados.empleados_top %}{{ e.nombre }}{% if not forloop.last %} · {% endif %}{% endfor %}</div>
+        <div class="sub">{{ empleados.maximo_mesas_atendidas }} mesa(s) atendida(s){% if empleados.empate %} · <b>empate</b>: se muestran todos{% endif %}</div>
+      {% else %}<div class="empty">Sin entregas en el periodo.</div>{% endif %}
+      <div class="wrap"><table style="margin-top:10px"><tr><th>Empleado</th><th class="n">Mesas</th><th class="n">Entregas</th></tr>
+        {% for e in empleados.ranking %}<tr><td>{{ e.nombre }} <span class="sub">{{ e.identificador }}</span></td><td class="n">{{ e.mesas_atendidas }}</td><td class="n">{{ e.entregas }}</td></tr>{% endfor %}</table></div>
+    </section>
+    <section class="card">
+      <h2>3 · Uso de mesas</h2>
+      {% if uso.mas_usadas %}
+        <div class="big">Mesa{{ uso.mas_usadas|length|pluralize }} {% for m in uso.mas_usadas %}{{ m.mesa_numero }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+        <div class="sub">más usadas ({{ uso.mas_usadas.0.frecuencia }} ocupación/es) · menos usadas: {% for m in uso.menos_usadas %}{{ m.mesa_numero }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+      {% else %}<div class="empty">Sin ocupaciones en el periodo.</div>{% endif %}
+      {% if horas %}<div style="margin-top:10px">{% for h in horas %}<div class="bar"><span class="sub" style="width:44px">{{ h.hora|stringformat:"02d" }}:00</span><i class="{% if h.pico %}pico{% endif %}" style="width:{{ h.ancho }}%"></i>{{ h.ocupaciones }}</div>{% endfor %}<div class="sub">Hora pico resaltada (ocupaciones iniciadas por hora)</div></div>{% endif %}
+    </section>
+  </div>
+
+  <h3>Uso por mesa</h3>
+  <div class="card wrap"><table><tr><th>Mesa</th><th>Zona</th><th class="n">Ocupaciones</th><th class="n">Tiempo ocupada</th></tr>
+    {% for m in uso.por_mesa %}<tr><td>Mesa {{ m.mesa_numero }}</td><td>{{ m.zona|default:"—" }}</td><td class="n">{{ m.frecuencia }}</td><td class="n">{{ m.ocupada_mmss }}</td></tr>{% endfor %}</table></div>
+
+  <h3>Últimas ocupaciones</h3>
+  <div class="card wrap">{% if ocupaciones %}<table><tr><th>Mesa</th><th>Estado</th><th>Inicio</th><th>Fin</th><th class="n">Espera 1.ª entrega</th><th>Evidencia</th></tr>
+    {% for r in ocupaciones %}<tr><td>Mesa {{ r.o.mesa.numero }}</td><td><span class="tag {{ r.o.estado }}">{{ r.o.estado }}</span></td>
+      <td>{{ r.o.hora_inicio|localtime|date:"d/m H:i:s" }}</td><td>{% if r.o.hora_fin %}{{ r.o.hora_fin|localtime|date:"d/m H:i:s" }}{% else %}—{% endif %}</td><td class="n">{{ r.espera }}</td>
+      <td>{% for url, dur in r.clips %}<a class="clip" data-ver href="{{ url }}" target="_blank" rel="noopener">▶ Ver clip{% if dur %} ({{ dur|floatformat:0 }} s){% endif %}</a><a class="clip" href="{{ url }}" download title="Descargar">⬇</a>{% empty %}<span class="sub">—</span>{% endfor %}</td></tr>{% endfor %}</table>
+  {% else %}<div class="empty">Aún no hay ocupaciones. Ejecute el microservicio de visión.</div>{% endif %}</div>
+
+  <h3>Últimas entregas</h3>
+  <div class="card wrap">{% if entregas %}<table><tr><th>Hora</th><th>Mesa</th><th>Mesero</th><th>Identificado por</th><th class="n">Confianza</th><th>Evidencia</th></tr>
+    {% for r in entregas %}<tr><td>{{ r.e.hora|localtime|date:"d/m H:i:s" }}</td><td>Mesa {{ r.e.ocupacion.mesa.numero }}</td><td>{{ r.e.personal.nombre }}</td>
+      <td>{{ r.e.get_metodo_identificacion_display|default:"—" }}</td><td class="n">{% if r.e.confianza is not None %}{{ r.e.confianza|floatformat:2 }}{% else %}—{% endif %}</td>
+      <td>{% for url, dur in r.clips %}<a class="clip" data-ver href="{{ url }}" target="_blank" rel="noopener">▶ Ver clip{% if dur %} ({{ dur|floatformat:0 }} s){% endif %}</a><a class="clip" href="{{ url }}" download title="Descargar">⬇</a>{% empty %}<span class="sub">—</span>{% endfor %}</td></tr>{% endfor %}</table>
+  {% else %}<div class="empty">Aún no hay entregas.</div>{% endif %}</div>
+  <p class="sub" style="margin-top:22px">Los clips se conservan 30 días como mínimo y luego se borran solos (RNF-03). Se reproducen aquí mismo (H.264); el botón ⬇ los descarga.</p>
+  {% endif %}
+</main>
+<dialog id="visor"><video id="video" controls playsinline></video><form method="dialog"><button>Cerrar</button></form></dialog>
+<script>
+  // Reproduce el clip dentro del panel; si el navegador no puede, el enlace normal (nueva pestaña) y ⬇ siguen funcionando.
+  const visor = document.getElementById('visor'), video = document.getElementById('video');
+  document.querySelectorAll('a[data-ver]').forEach(a => a.addEventListener('click', e => {
+    if (!visor.showModal) return;
+    e.preventDefault(); video.src = a.href; visor.showModal(); video.play().catch(() => {});
+  }));
+  visor.addEventListener('close', () => { video.pause(); video.removeAttribute('src'); video.load(); });
+</script>
+</body>
+</html>
